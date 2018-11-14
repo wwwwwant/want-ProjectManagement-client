@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import "./Login.css";
-import { Auth } from "aws-amplify";
+import { Auth,API } from "aws-amplify";
 import LoaderButton from "../components/LoaderButton";
+import {constants} from "../utils/constants";
 
 
 export default class Login extends Component {
@@ -24,7 +25,17 @@ export default class Login extends Component {
         this.setState({
             [event.target.id]: event.target.value
         });
+    };
+
+    async getIsAdmin() {
+        const path = "/getUser/"+this.state.email;
+        const res =  await API.get(constants.projectName,path,{});
+        console.log("get user:",this.state.email," isAdmin:",res.isAdmin);
+        return res.isAdmin;
     }
+
+
+
 
     handleSubmit = async event => {
         event.preventDefault();
@@ -33,7 +44,10 @@ export default class Login extends Component {
 
         try{
             await Auth.signIn(this.state.email, this.state.password);
+            console.log("login in successfully");
             this.props.userHasAuthenticated(true);
+            this.props.setUserName(this.state.email);
+            this.props.setAdmin(this.getIsAdmin());
             this.props.history.push("/");
         } catch (e) {
             alert(e.message);

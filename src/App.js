@@ -13,7 +13,9 @@ class App extends Component {
 
         this.state = {
             isAuthenticated: false,
-            isAuthenticating: true
+            isAuthenticating: true,
+            userName: "",
+            isAdmin: false
         };
     }
 
@@ -34,21 +36,45 @@ class App extends Component {
         this.setState({
             isAuthenticated: authenticated
         });
-    }
+    };
+
+    setUserName = userName =>{
+      this.setState({
+          userName:userName
+      })
+    };
+
+    setAdmin = isAdmin =>{
+        this.setState({
+            isAdmin:isAdmin
+        })
+    };
 
     handleLogout = async event =>{
 
         await Auth.signOut();
 
         this.userHasAuthenticated(false);
+        console.log("before log out: ",this.state.userName);
+        this.setUserName("");
+        console.log(this.state.userName);
 
         this.props.history.push("/login");
     }
 
   render() {
         const childProps = {
-          isAuthenticated: this.state.isAuthenticated,
-          userHasAuthenticated : this.userHasAuthenticated
+            isAuthenticated: this.state.isAuthenticated,
+
+            userHasAuthenticated : this.userHasAuthenticated,
+
+            userName: this.state.userName,
+
+            setUserName: this.setUserName,
+
+            isAdmin: this.state.isAdmin,
+
+            setAdmin: this.setAdmin
         };
 
     return (
@@ -64,13 +90,25 @@ class App extends Component {
               <Navbar.Collapse>
                   <Nav pullRight>
                       {this.state.isAuthenticated
-                          ? <NavItem onClick={this.handleLogout}>Logout</NavItem>
+                          ?
+                          <Fragment>
+                              <NavItem onClick={this.handleLogout}>Logout</NavItem>
+                              <LinkContainer to={"/testAPI"}>
+                                  <NavItem>testAPI</NavItem>
+                              </LinkContainer>
+                              <LinkContainer to={"/createUser"}>
+                                  <NavItem>createUser</NavItem>
+                              </LinkContainer>
+                          </Fragment>
                           : <Fragment>
                               <LinkContainer to="/signup">
                                   <NavItem>Signup</NavItem>
                               </LinkContainer>
                               <LinkContainer to="/login">
                                   <NavItem>Login</NavItem>
+                              </LinkContainer>
+                              <LinkContainer to={"/testAPI"}>
+                                  <NavItem>testAPI</NavItem>
                               </LinkContainer>
                           </Fragment>
                       }

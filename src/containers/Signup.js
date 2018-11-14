@@ -20,9 +20,10 @@ export default class Signup extends Component {
             password: "",
             confirmPassword: "",
             confirmationCode: "",
-            newUser: null
+            newUser: null,
         };
     }
+
 
     validateForm() {
         return (
@@ -47,15 +48,15 @@ export default class Signup extends Component {
 
         this.setState({isLoading:true});
 
-        try{
-            const user = await Auth.signUp({
-                username: this.state.email,
-                password: this.state.password
-            });
-            this.setState({newUser:user});
-        }catch (e) {
-            alert(e.message);
-        }
+            try{
+                const user = await Auth.signUp({
+                    username: this.state.email,
+                    password: this.state.password
+                });
+                this.setState({newUser:user});
+            }catch (e) {
+                alert(e.message);
+            }
 
         this.setState({isLoading:false});
     }
@@ -64,7 +65,6 @@ export default class Signup extends Component {
         event.preventDefault();
 
         this.setState({isLoading:true});
-
         try{
             await Auth.confirmSignUp(this.state.email, this.state.confirmationCode);
             await Auth.signIn(this.state.email,this.state.password);
@@ -75,7 +75,7 @@ export default class Signup extends Component {
             alert(e.message);
             this.setState({isLoading:false});
         }
-    }
+    };
 
     renderConfirmationForm() {
         return (

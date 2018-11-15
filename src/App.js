@@ -32,22 +32,22 @@ class App extends Component {
         this.setState({isAuthenticating: false});
     }
 
-    userHasAuthenticated = authenticated =>{
+    setAdmin = (isAdmin) =>{
         this.setState({
-            isAuthenticated: authenticated
+            isAdmin: isAdmin
         });
     };
 
     setUserName = userName =>{
-      this.setState({
-          userName:userName
-      })
-    };
-
-    setAdmin = isAdmin =>{
         this.setState({
-            isAdmin:isAdmin
+            userName:userName
         })
+    }
+
+    userHasAuthenticated = authenticated =>{
+        this.setState({
+            isAuthenticated: authenticated
+        });
     };
 
     handleLogout = async event =>{
@@ -55,10 +55,6 @@ class App extends Component {
         await Auth.signOut();
 
         this.userHasAuthenticated(false);
-        console.log("before log out: ",this.state.userName);
-        this.setUserName("");
-        console.log(this.state.userName);
-
         this.props.history.push("/login");
     }
 
@@ -70,11 +66,12 @@ class App extends Component {
 
             userName: this.state.userName,
 
-            setUserName: this.setUserName,
-
             isAdmin: this.state.isAdmin,
 
-            setAdmin: this.setAdmin
+            setAdmin: this.setAdmin,
+
+            setUserName: this.setUserName
+
         };
 
     return (

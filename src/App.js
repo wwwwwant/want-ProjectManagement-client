@@ -93,9 +93,20 @@ class App extends Component {
                               <LinkContainer to={"/testAPI"}>
                                   <NavItem>testAPI</NavItem>
                               </LinkContainer>
-                              <LinkContainer to={"/createUser"}>
-                                  <NavItem>createUser</NavItem>
-                              </LinkContainer>
+                              {this.state.isAdmin
+                                  ?
+                                  <Fragment>
+                                      <LinkContainer to={"/createUser"}>
+                                          <NavItem>createUser</NavItem>
+                                      </LinkContainer>
+                                      <LinkContainer to={"/deleteUser"}>
+                                          <NavItem>deleteUser</NavItem>
+                                      </LinkContainer>
+                                      <LinkContainer to={"/updateUser"}>
+                                          <NavItem>updateUser</NavItem>
+                                      </LinkContainer>
+                                  </Fragment>
+                                  :null}
                           </Fragment>
                           : <Fragment>
                               <LinkContainer to="/signup">

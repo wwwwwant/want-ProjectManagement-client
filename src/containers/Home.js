@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { PageHeader, ListGroup, ListGroupItem,Button } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import "./Home.css";
-import {getUser, listProject} from "../utils/esayAPI";
+import {getUser, listProject, listUser} from "../utils/esayAPI";
 
 export default class Home extends Component {
 
@@ -12,10 +12,12 @@ export default class Home extends Component {
         this.state = {
             isLoading: true,
             projects: [],
-            userInfo: ""
+            user:{},
+            users:[],
+            attendedProjects:[]
 
         }
-    }
+    };
 
         async componentDidMount()
         {
@@ -23,20 +25,30 @@ export default class Home extends Component {
                 return;
             }
             try {
-                console.log(this.props.userName);
-                const userInfo = await this.getUserInfo(this.props.userName);
+                if (this.props.isAdmin){
+                    const users = await this.getListUsers();
+                    this.setState({users});
+                    console.log("get user num: "+users.length);
+                }
+                const user = await this.getUserInfo(this.props.userName);
                 const projects = await this.getListProjects();
-                this.setState({userInfo: JSON.stringify(userInfo)});
-                this.setState({projects})
-                // const userInfo = await this.getUserInfo();
-                // console.log(projects);
-                // this.setState({ projects });
+                this.setState({attendedProjects: user.projects.split(",")});
+                this.setState({user});
+                this.setState({projects});
+
             } catch (e) {
                 alert(e);
             }
 
             this.setState({isLoading: false});
-        }
+        };
+
+        getListUsers() {
+            const params = {
+                userKey: "User"
+            };
+            return listUser(params);
+        };
 
         async getListProjects()
         {
@@ -44,23 +56,62 @@ export default class Home extends Component {
                 projectKey: "Project"
             };
             return await listProject(params);
-        }
+        };
 
         async getUserInfo(userName)
         {
             return await getUser(userName);
         }
 
+        attendedProjects(projectName){
+           return this.state.attendedProjects.includes(projectName);
+        }
+
         renderProjects(projects)
         {
-            return projects.map(
-                (project,i) =>
+            // if user is admin then he can see all of the projects
+            if (this.props.isAdmin){
+                return projects.map(
+                    (project,i) =>
+
+                        <LinkContainer
+                            key={project.projectName}
+                            to={`/project/${project.projectName}`}
+                        >
+                            <ListGroupItem  header={"projectName: "+project.projectName}>
+                                {"LastEdit: "+ new Date(project.lastEditAt).toLocaleString()}
+                            </ListGroupItem>
+                        </LinkContainer>
+
+                );
+            } else{
+                return projects.map(
+                    (project,i) =>
+                        this.attendedProjects(project.projectName)?
+                        <LinkContainer
+                            key={project.projectName}
+                            to={`/project/${project.projectName}`}
+                        >
+                            <ListGroupItem  header={"projectName: "+project.projectName}>
+                                {"LastEdit: "+ new Date(project.lastEditAt).toLocaleString()}
+                            </ListGroupItem>
+                        </LinkContainer>
+                            : null
+
+                );
+            }
+
+        }
+
+        renderUsers(users){
+            return users.map(
+                (user) =>
                     <LinkContainer
-                        key={project.projectName}
-                        to={`/project/${project.projectName}`}
+                        key={user.userName}
+                        to={`/user/${user.userName}`}
                     >
-                        <ListGroupItem  header={"projectName: "+project.projectName}>
-                            {"Created: " + new Date(project.createAt).toLocaleString()}
+                        <ListGroupItem  header={"userName: "+user.userName}>
+                            {"CreateAt: "+ new Date(user.createAt).toLocaleString()}
                         </ListGroupItem>
                     </LinkContainer>
 
@@ -99,7 +150,7 @@ export default class Home extends Component {
                 <div className="Info">
                     <div className="UserInfo">
                         <PageHeader>My Personal Info </PageHeader>
-                        <div>{!this.state.isLoading && this.renderUserInfo(this.state.userInfo)}</div>
+                        <div>{!this.state.isLoading && this.renderUserInfo(JSON.stringify(this.state.user))}</div>
                         <form onSubmit={this.buttonEvent}>
                             <Button
                                 bsSize="large"
@@ -117,6 +168,14 @@ export default class Home extends Component {
                             {!this.state.isLoading && this.renderProjects(this.state.projects)}
                         </ListGroup>
                     </div>
+                    {this.props.isAdmin
+                        ? <div className="Users">
+                            <PageHeader>AllUsers</PageHeader>
+                            <ListGroup>
+                                {!this.state.isLoading && this.renderUsers(this.state.users)}
+                            </ListGroup>
+                        </div>
+                    : null}
                 </div>
             );
         }

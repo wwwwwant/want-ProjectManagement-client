@@ -71,8 +71,9 @@ export default class Projects extends Component {
                 details: this.state.details,
                 managerName: this.state.managerName,
                 developers: this.state.developers,
-                projectStatus: this.state.projectStatus
-            }
+                projectStatus: this.state.projectStatus,
+                lastEditAt: Date.now()
+            };
             return updateProject(this.state.project.projectName,params);
         }
 
@@ -88,7 +89,7 @@ export default class Projects extends Component {
         {
             return (
                 <div className={"Projects"}>
-                    { (!this.props.isAdmin) || (this.props.userName !== this.state.project.managerName) ?
+                    { ((!this.props.isAdmin) && (this.props.userName !== this.state.project.managerName)) ?
                         <div>{JSON.stringify(this.state.project)}</div>
                         :
                         <form onSubmit={this.handleSubmit}>

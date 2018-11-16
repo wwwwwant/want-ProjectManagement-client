@@ -1,56 +1,46 @@
 import React, { Component } from "react";
 import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
-import { API } from "aws-amplify";
+import {deleteUser} from "../utils/esayAPI";
 
 
-export default class CreateUser extends Component {
+export default class delUser extends Component {
     constructor(props){
         super(props);
 
         this.state = {
-            isAdmin : false,
             isLoading: false,
-            skill: "Ruby",
-            userName: "user10"
+            userName: ""
         }
     }
     validateForm() {
-        return this.state.userName.length>0 && this.state.skill.length>0;
+        return this.state.userName.length>0;
     }
 
     handleChange = event => {
         this.setState({
             [event.target.id]: event.target.value
         });
-    }
+    };
 
     handleSubmit = async event => {
         event.preventDefault();
 
         this.setState({isLoading: true});
-        const params = {
-            isAdmin: this.state.isAdmin,
-            skill: this.state.skill,
-            userName: this.state.userName
-        }
 
         try{
-            const res = await API.post("projectManagement","/createUser",{
-                            body:params
-                        });
-            console.log(res);
+            const res = await deleteUser(this.state.userName);
+            alert("delete user success:"+res);
             this.props.history.push("/");
-            alert("successfully create user!");
         } catch (e) {
             alert(e.message);
         }
         this.setState({isLoading: false});
-    }
+    };
 
     render() {
         return (
-            <div className="CreateUser">
+            <div className="DelUser">
                 <form onSubmit={this.handleSubmit}>
                     <FormGroup controlId="userName" bsSize="large">
                         <ControlLabel>userName</ControlLabel>
@@ -61,30 +51,14 @@ export default class CreateUser extends Component {
                             onChange={this.handleChange}
                         />
                     </FormGroup>
-                    <FormGroup controlId="skill" bsSize="large">
-                        <ControlLabel>skill</ControlLabel>
-                        <FormControl
-                            value={this.state.skill}
-                            onChange={this.handleChange}
-                            type="string"
-                        />
-                    </FormGroup>
-                    <FormGroup controlId={"isAdmin"} bsSize={"large"}>
-                        <ControlLabel>isAdmin</ControlLabel>
-                        <FormControl
-                            value={this.state.isAdmin}
-                            onChange={this.handleChange}
-                            type={"boolean"}
-                        />
-                    </FormGroup>
                     <LoaderButton
                         block
                         bsSize="large"
                         disabled={!this.validateForm()}
                         type="submit"
                         isLoading={this.state.isLoading}
-                        text={"Create"}
-                        loadingText={"Creating..."}
+                        text={"Delete"}
+                        loadingText={"Deleting..."}
                     />
                 </form>
             </div>

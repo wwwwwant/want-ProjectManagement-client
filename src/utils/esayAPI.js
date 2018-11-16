@@ -11,8 +11,8 @@ export async function deleteUser(userName){
     return await API.del(constants.projectName,path,{});
 }
 
-export async function createUser(userName,params){
-    const path = "/createUser"
+export async function createUser(params){
+    const path = "/createUser";
     return await API.post(constants.projectName,path,{body:params});
 }
 
@@ -38,7 +38,7 @@ export async function deleteProject(projectName){
     return await API.del(constants.projectName,path,{});
 }
 
-export async function createProject(projectName,params){
+export async function createProject(params){
     const path = "/createProject"
     return await API.post(constants.projectName,path,{body:params});
 }

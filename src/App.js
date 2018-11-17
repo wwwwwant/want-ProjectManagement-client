@@ -96,7 +96,7 @@ class App extends Component {
                               {this.state.isAdmin
                                   ?
                                   <Fragment>
-                                      <LinkContainer to={"/createUser"}>
+                                      <LinkContainer to={"/user/new"}>
                                           <NavItem>createUser</NavItem>
                                       </LinkContainer>
                                       <LinkContainer to={"/deleteUser"}>

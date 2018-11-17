@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
 // import { API } from "aws-amplify";
-import {updateUser} from "../utils/esayAPI";
+import {getUser, updateUser} from "../utils/esayAPI";
 
 
 export default class ModifyUser extends Component {
@@ -12,18 +12,40 @@ export default class ModifyUser extends Component {
         this.state = {
             isLoading: false,
             skill: "",
+            details:""
         }
     }
 
     validateForm() {
         return this.state.skill.length>0;
-    }
+    };
 
     handleChange = event => {
         this.setState({
             [event.target.id]: event.target.value
         });
-    }
+    };
+
+    async componentDidMount()
+    {
+        if (!this.props.isAuthenticated) {
+            return;
+        }
+        try {
+            const user = await this.getUser();
+            this.setState({skill:user.skill});
+            this.setState({details:user.details});
+        } catch (e) {
+            alert(e);
+        }
+
+        this.setState({isLoading: false});
+    };
+
+    getUser()
+    {
+        return getUser(this.props.userName);
+    };
 
     handleSubmit = async event => {
         event.preventDefault();
@@ -31,6 +53,7 @@ export default class ModifyUser extends Component {
         this.setState({isLoading: true});
         const params = {
             skill: this.state.skill,
+            details:this.state.details
         }
 
         try{
@@ -51,6 +74,14 @@ export default class ModifyUser extends Component {
                         <ControlLabel>skill</ControlLabel>
                         <FormControl
                             value={this.state.skill}
+                            onChange={this.handleChange}
+                            type="string"
+                        />
+                    </FormGroup>
+                    <FormGroup controlId="details" bsSize="large">
+                        <ControlLabel>details</ControlLabel>
+                        <FormControl
+                            value={this.state.details}
                             onChange={this.handleChange}
                             type="string"
                         />

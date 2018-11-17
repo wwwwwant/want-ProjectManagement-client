@@ -13,7 +13,8 @@ export default class CreateNewUser extends Component {
             isLoading: false,
             skill: "",
             userName: "",
-            projects:""
+            projects:"",
+            details:""
         }
     }
     validateForm() {
@@ -33,7 +34,8 @@ export default class CreateNewUser extends Component {
         const params = {
             isAdmin: this.state.isAdmin,
             skill: this.state.skill,
-            projects: this.state.projects
+            projects: this.state.projects,
+            details:this.state.details
         };
 
         try{
@@ -82,6 +84,14 @@ export default class CreateNewUser extends Component {
                             value={this.state.isAdmin}
                             onChange={this.handleChange}
                             type={"boolean"}
+                        />
+                    </FormGroup>
+                    <FormGroup controlId={"details"} bsSize={"large"}>
+                        <ControlLabel>details</ControlLabel>
+                        <FormControl
+                            value={this.state.details}
+                            onChange={this.handleChange}
+                            type={"string"}
                         />
                     </FormGroup>
                     <LoaderButton

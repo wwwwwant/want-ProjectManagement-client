@@ -12,7 +12,9 @@ export default class CreateNewUser extends Component {
             isAdmin : false,
             isLoading: false,
             skill: "Ruby",
-            userName: "user10"
+            userName: "user10",
+            projects:"",
+            details:""
         }
     }
     validateForm() {
@@ -32,7 +34,9 @@ export default class CreateNewUser extends Component {
         const params = {
             isAdmin: this.state.isAdmin,
             skill: this.state.skill,
-            userName: this.state.userName
+            userName: this.state.userName,
+            projects:this.state.projects,
+            detail:this.state.details
         }
 
         try{
@@ -73,6 +77,22 @@ export default class CreateNewUser extends Component {
                             value={this.state.isAdmin}
                             onChange={this.handleChange}
                             type={"boolean"}
+                        />
+                    </FormGroup>
+                    <FormGroup controlId={"projects"} bsSize={"large"}>
+                        <ControlLabel>projects</ControlLabel>
+                        <FormControl
+                            value={this.state.projects}
+                            onChange={this.handleChange}
+                            type={"string"}
+                        />
+                    </FormGroup>
+                    <FormGroup controlId={"details"} bsSize={"large"}>
+                        <ControlLabel>details</ControlLabel>
+                        <FormControl
+                            value={this.state.details}
+                            onChange={this.handleChange}
+                            type={"string"}
                         />
                     </FormGroup>
                     <LoaderButton

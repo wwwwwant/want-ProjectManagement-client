@@ -31,6 +31,7 @@ export default class Home extends Component {
                     console.log("get user num: "+users.length);
                 }
                 const user = await this.getUserInfo(this.props.userName);
+                // console.log(JSON.stringify(user));
                 const projects = await this.getListProjects();
                 this.setState({attendedProjects: user.projects.split(",")});
                 this.setState({user});
@@ -73,15 +74,25 @@ export default class Home extends Component {
             if (this.props.isAdmin){
                 return projects.map(
                     (project,i) =>
-
-                        <LinkContainer
-                            key={project.projectName}
-                            to={`/project/${project.projectName}`}
-                        >
-                            <ListGroupItem  header={"projectName: "+project.projectName}>
-                                {"LastEdit: "+ new Date(project.lastEditAt).toLocaleString()}
-                            </ListGroupItem>
-                        </LinkContainer>
+                        i!==0
+                            ? <LinkContainer
+                                key={project.projectName}
+                                to={`/project/${project.projectName}`}
+                                >
+                                    <ListGroupItem  header={"projectName: "+project.projectName}>
+                                        {"LastEdit: "+ new Date(project.lastEditAt).toLocaleString()}
+                                    </ListGroupItem>
+                                </LinkContainer>
+                            : <LinkContainer
+                                key="new"
+                                to="/project/new"
+                            >
+                                <ListGroupItem>
+                                    <h4>
+                                        <b>{"\uFF0B"}</b> Create a new project
+                                    </h4>
+                                </ListGroupItem>
+                            </LinkContainer>
 
                 );
             } else{
@@ -105,15 +116,26 @@ export default class Home extends Component {
 
         renderUsers(users){
             return users.map(
-                (user) =>
-                    <LinkContainer
-                        key={user.userName}
-                        to={`/user/${user.userName}`}
-                    >
-                        <ListGroupItem  header={"userName: "+user.userName}>
-                            {"CreateAt: "+ new Date(user.createAt).toLocaleString()}
-                        </ListGroupItem>
-                    </LinkContainer>
+                (user,i) =>
+                    i!==0?
+                        <LinkContainer
+                            key={user.userName}
+                            to={`/user/${user.userName}`}
+                        >
+                            <ListGroupItem  header={"userName: "+user.userName}>
+                                {"CreateAt: "+ new Date(user.createAt).toLocaleString()}
+                            </ListGroupItem>
+                        </LinkContainer>
+                        :<LinkContainer
+                            key="new"
+                            to="/user/new"
+                        >
+                            <ListGroupItem>
+                                <h4>
+                                    <b>{"\uFF0B"}</b> Create a new user
+                                </h4>
+                            </ListGroupItem>
+                        </LinkContainer>
 
             );
         }

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
-import {getProject, updateProject} from "../utils/esayAPI";
+import {getProject, getUser, updateProject, updateUser} from "../utils/esayAPI";
 import LoaderButton from "../components/LoaderButton";
 
 export default class Projects extends Component {
@@ -53,6 +53,28 @@ export default class Projects extends Component {
 
             this.setState({isLoading:true});
 
+
+            if (this.state.developers !== this.state.project.developers) {
+                const oldDevelopers = this.state.project.developers.split(",");
+                this.state.developers.split(",").forEach(developer=>{
+                    if (!oldDevelopers.includes(developer)){
+                        const res = this.addAttendedProject(developer);
+                        console.log(res);
+                    }
+                });
+
+                }
+
+            if (this.state.managerName !== this.state.project.managerName){
+                try{
+                    const res = this.addAttendedProject(this.state.managerName);
+                    console.log(res);
+                }catch (e) {
+                    console.log(e.message);
+                }
+
+            }
+
             try{
                 const res = await this.editProject();
                 console.log(res);
@@ -66,6 +88,17 @@ export default class Projects extends Component {
         };
 
 
+        async addAttendedProject(userName){
+            const user = await getUser(userName);
+            console.log(JSON.stringify(user));
+            delete user.userName;
+            delete user.userKey;
+            user.projects == null? user.projects = this.props.match.params.id
+                :user.projects = user.projects.concat(","+this.props.match.params.id);
+            return await updateUser(userName,user);
+        }
+
+
         editProject(){
             const params= {
                 details: this.state.details,
@@ -75,15 +108,8 @@ export default class Projects extends Component {
                 lastEditAt: Date.now()
             };
             return updateProject(this.state.project.projectName,params);
-        }
+        };
 
-        // renderProjectInfo(project)
-        // {
-        //     for (let key in project) {
-        //
-        //     }
-        //
-        // }
 
         render()
         {
@@ -93,12 +119,20 @@ export default class Projects extends Component {
                         <div>{JSON.stringify(this.state.project)}</div>
                         :
                         <form onSubmit={this.handleSubmit}>
+                            <FormGroup controlId="projectName">
+                                <ControlLabel>projectName</ControlLabel>
+                                <FormControl
+                                    readOnly={true}
+                                    value={this.state.project.projectName}
+                                    componentClass="textarea"
+                                />
+                            </FormGroup>
                             <FormGroup controlId="details">
                                 <ControlLabel>details</ControlLabel>
                                 <FormControl
                                     onChange={this.handleChange}
                                     value={this.state.details}
-                                    componentClass="textarea"
+                                    // componentClass="textarea"
                                 />
                             </FormGroup>
                             <FormGroup controlId={"developers"}>
@@ -106,23 +140,32 @@ export default class Projects extends Component {
                                 <FormControl
                                     onChange={this.handleChange}
                                     value={this.state.developers}
-                                    componentClass={"textarea"}
+                                    // componentClass={"textarea"}
                                 />
                             </FormGroup>
                             <FormGroup controlId={"managerName"}>
                                 <ControlLabel>managerName</ControlLabel>
-                                <FormControl
+                                {this.props.isAdmin?
+                                    <FormControl
+                                    // only admin can change the value of project manager
                                     onChange={this.handleChange}
                                     value={this.state.managerName}
                                     componentClass={"textarea"}
                                 />
+                                    :
+                                    <FormControl
+                                        readOnly={true}
+                                        value={this.state.managerName}
+                                        componentClass={"textarea"}
+                                    />
+                                }
                             </FormGroup>
                             <FormGroup controlId={"projectStatus"}>
                                 <ControlLabel>projectStatus</ControlLabel>
                                 <FormControl
                                     onChange={this.handleChange}
                                     value={this.state.projectStatus}
-                                    componentClass={"textarea"}
+                                    // componentClass={"textarea"}
                                 />
                             </FormGroup>
                             <LoaderButton

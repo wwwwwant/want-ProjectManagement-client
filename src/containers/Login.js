@@ -29,7 +29,6 @@ export default class Login extends Component {
 
     async getIsAdmin() {
         const res =  await getUser(this.state.email);
-        console.log("get user:",this.state.email," isAdmin:",res.isAdmin);
         return res.isAdmin;
     }
 
@@ -43,12 +42,9 @@ export default class Login extends Component {
 
         try{
             await Auth.signIn(this.state.email, this.state.password);
-            console.log("login in successfully");
             this.props.userHasAuthenticated(true);
             this.props.setUserName(this.state.email);
             this.props.setAdmin(await this.getIsAdmin());
-            console.log(this.props.userName);
-            console.log(this.props.isAdmin);
             this.props.history.push("/");
         } catch (e) {
             alert(e.message);

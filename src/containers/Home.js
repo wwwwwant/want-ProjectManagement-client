@@ -29,10 +29,8 @@ export default class Home extends Component {
                 if (this.props.isAdmin){
                     const users = await this.getListUsers();
                     this.setState({users});
-                    console.log("get user num: "+users.length);
                 }
                 const user = await getUser(this.props.userName);
-                // console.log(JSON.stringify(user));
                 const projects = await this.getListProjects();
                 this.setState({attendedProjects: user.projects.split(",")});
                 this.setState({user});

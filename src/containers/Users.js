@@ -1,6 +1,6 @@
 import React, {Component} from "react";
-import {FormGroup, FormControl, ControlLabel, ButtonGroup} from "react-bootstrap";
-import {deleteUser, getProject, getUser, updateProject, updateUser} from "../utils/esayAPI";
+import {FormGroup, FormControl, ControlLabel} from "react-bootstrap";
+import { getProject, getUser, updateProject, updateUser} from "../utils/esayAPI";
 import LoaderButton from "../components/LoaderButton";
 
 export default class Users extends Component {

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { PageHeader, ListGroup, ListGroupItem,Button } from "react-bootstrap";
+import { PageHeader, ListGroup, ListGroupItem } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import "./Home.css";
 import {getUser, listProject, listUser} from "../utils/esayAPI";
@@ -140,12 +140,18 @@ export default class Home extends Component {
             );
         }
 
-        renderUserInfo(userInfo)
+        renderUserInfo(user)
         {
             return (
-                <div className="UserInfo">
-                    <p>{userInfo}</p>
-                </div>
+                <LinkContainer
+                    key={user.userName}
+                    to={`/user/${user.userName}`}
+                >
+                    <ListGroupItem  header={"userName: "+user.userName} >
+                        {"CreateAt: "+ new Date(user.createAt).toLocaleString()}
+                    </ListGroupItem>
+                </LinkContainer>
+
             );
         }
 
@@ -161,28 +167,13 @@ export default class Home extends Component {
             );
         }
 
-        buttonEvent = event =>{
-            event.preventDefault();
-            this.props.history.push("/modifyUser");
-        }
-
         renderInfo()
         {
             return (
                 <div className="Info">
                     <div className="UserInfo">
                         <PageHeader>My Personal Info </PageHeader>
-                        <div>{!this.state.isLoading && this.renderUserInfo(JSON.stringify(this.state.user))}</div>
-                        <form onSubmit={this.buttonEvent}>
-                            <Button
-                                bsSize="large"
-                                disabled={false}
-                                type={"submit"}
-                            >
-                                modifyPersonalInfo
-                            </Button>
-                        </form>
-
+                        <div>{!this.state.isLoading && this.renderUserInfo(this.state.user)}</div>
                     </div>
                     <div className="Projects">
                         <PageHeader>My Projects</PageHeader>

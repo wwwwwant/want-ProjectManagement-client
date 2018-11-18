@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
+import {FormGroup, FormControl, ControlLabel, ListGroup, ListGroupItem} from "react-bootstrap";
 import {getProject, getUser, updateProject, updateUser} from "../utils/esayAPI";
 import LoaderButton from "../components/LoaderButton";
 
@@ -93,8 +93,8 @@ export default class Projects extends Component {
             console.log(JSON.stringify(user));
             delete user.userName;
             delete user.userKey;
-            user.projects == null? user.projects = this.props.match.params.id
-                :user.projects = user.projects.concat(","+this.props.match.params.id);
+            user.projects = user.projects == null?  this.props.match.params.id
+                : user.projects.concat(","+this.props.match.params.id);
             return await updateUser(userName,user);
         }
 
@@ -110,13 +110,29 @@ export default class Projects extends Component {
             return updateProject(this.state.project.projectName,params);
         };
 
+        renderReadOnlyProject(project){
+            return (
+                <ListGroup>
+                    <ListGroupItem header={"projectName: "}>{project.projectName}</ListGroupItem>
+                    <ListGroupItem header={"details: "}>{project.details}</ListGroupItem>
+                    <ListGroupItem header={"developers: "}>{project.developers}</ListGroupItem>
+                    <ListGroupItem header={"projectStatus: "}>{project.projectStatus}</ListGroupItem>
+                    <ListGroupItem header={"lastEditAt: "}>{new Date(project.lastEditAt).toLocaleString()}</ListGroupItem>
+                    <ListGroupItem header={"createAt: "}>{new Date(project.createAt).toLocaleString()}</ListGroupItem>
+                </ListGroup>
+            );
+
+        };
+
 
         render()
         {
             return (
                 <div className={"Projects"}>
                     { ((!this.props.isAdmin) && (this.props.userName !== this.state.project.managerName)) ?
-                        <div>{JSON.stringify(this.state.project)}</div>
+                            <div>
+                                {this.renderReadOnlyProject(this.state.project)}
+                            </div>
                         :
                         <form onSubmit={this.handleSubmit}>
                             <FormGroup controlId="projectName">
@@ -132,7 +148,7 @@ export default class Projects extends Component {
                                 <FormControl
                                     onChange={this.handleChange}
                                     value={this.state.details}
-                                    // componentClass="textarea"
+                                    componentClass="textarea"
                                 />
                             </FormGroup>
                             <FormGroup controlId={"developers"}>
@@ -140,7 +156,7 @@ export default class Projects extends Component {
                                 <FormControl
                                     onChange={this.handleChange}
                                     value={this.state.developers}
-                                    // componentClass={"textarea"}
+                                    componentClass={"textarea"}
                                 />
                             </FormGroup>
                             <FormGroup controlId={"managerName"}>

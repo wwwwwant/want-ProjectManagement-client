@@ -90,9 +90,6 @@ class App extends Component {
                           ?
                           <Fragment>
                               <NavItem onClick={this.handleLogout}>Logout</NavItem>
-                              <LinkContainer to={"/testAPI"}>
-                                  <NavItem>testAPI</NavItem>
-                              </LinkContainer>
                               {this.state.isAdmin
                                   ?
                                   <Fragment>
@@ -114,9 +111,6 @@ class App extends Component {
                               </LinkContainer>
                               <LinkContainer to="/login">
                                   <NavItem>Login</NavItem>
-                              </LinkContainer>
-                              <LinkContainer to={"/testAPI"}>
-                                  <NavItem>testAPI</NavItem>
                               </LinkContainer>
                           </Fragment>
                       }

@@ -54,28 +54,40 @@ export default class Projects extends Component {
             this.setState({isLoading:true});
 
 
-            if (this.state.developers !== this.state.project.developers) {
-                const oldDevelopers = this.state.project.developers.split(",");
-                this.state.developers.split(",").forEach(developer=>{
-                    if (!oldDevelopers.includes(developer)){
-                        const res = this.addAttendedProject(developer);
-                        console.log(res);
-                    }
-                });
-
-                }
-
-            if (this.state.managerName !== this.state.project.managerName){
-                try{
-                    const res = this.addAttendedProject(this.state.managerName);
-                    console.log(res);
-                }catch (e) {
-                    console.log(e.message);
-                }
-
-            }
-
             try{
+                const oldDevelopers = this.state.project.developers.split(",");
+                const newDevelopers = this.state.developers.split(",");
+                if (oldDevelopers !== newDevelopers) {
+                    const addDevelopers = newDevelopers.filter( project =>{
+                        return !oldDevelopers.includes(project);
+                    });
+                    const delDevelopers = oldDevelopers.filter( project =>{
+                        return !newDevelopers.includes(project);
+                    });
+
+                    addDevelopers.forEach( userName =>{
+                        const res = this.changeAttendedProject(true,userName);
+                        console.log(res);
+                    });
+
+                    delDevelopers.forEach( userName =>{
+                        const res = this.changeAttendedProject(false,userName);
+                        console.log(res);
+                    })
+                }
+
+                if (this.state.managerName !== this.state.project.managerName){
+                    try{
+                        let res = this.changeAttendedProject(true,this.state.managerName);
+                        console.log(res);
+                        res = this.changeAttendedProject(false,this.state.project.managerName);
+                        console.log(res);
+                    }catch (e) {
+                        console.log(e.message);
+                    }
+
+                }
+
                 const res = await this.editProject();
                 console.log(res);
                 this.props.history.push("/");
@@ -88,13 +100,17 @@ export default class Projects extends Component {
         };
 
 
-        async addAttendedProject(userName){
+        async changeAttendedProject(isAdd,userName){
             const user = await getUser(userName);
-            console.log(JSON.stringify(user));
+            user.projects = user.projects.split(",").filter( projectName =>{
+                return projectName!==this.state.project.projectName;
+            }).toString();
+            if (isAdd) {
+                user.projects = user.projects.concat(","+this.state.project.projectName);
+            }
             delete user.userName;
             delete user.userKey;
-            user.projects = user.projects == null?  this.props.match.params.id
-                : user.projects.concat(","+this.props.match.params.id);
+
             return await updateUser(userName,user);
         }
 

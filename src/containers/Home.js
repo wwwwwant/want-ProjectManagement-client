@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { PageHeader, ListGroup, ListGroupItem } from "react-bootstrap";
+import React, {Component, Fragment} from "react";
+import {PageHeader, ListGroup, ListGroupItem, ButtonGroup, Button} from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import "./Home.css";
 import {getUser, listProject, listUser} from "../utils/esayAPI";
@@ -14,6 +14,7 @@ export default class Home extends Component {
             projects: [],
             user:{},
             users:[],
+            showStatus:"allStatus",
             attendedProjects:[]
 
         }
@@ -30,7 +31,7 @@ export default class Home extends Component {
                     this.setState({users});
                     console.log("get user num: "+users.length);
                 }
-                const user = await this.getUserInfo(this.props.userName);
+                const user = await getUser(this.props.userName);
                 // console.log(JSON.stringify(user));
                 const projects = await this.getListProjects();
                 this.setState({attendedProjects: user.projects.split(",")});
@@ -59,56 +60,73 @@ export default class Home extends Component {
             return await listProject(params);
         };
 
-        async getUserInfo(userName)
-        {
-            return await getUser(userName);
-        }
-
         attendedProjects(projectName){
            return this.state.attendedProjects.includes(projectName);
         }
+
+        changeShowStatus = event =>{
+            this.setState({showStatus:event.target.value});
+        };
+
+        showProjectBasedOnStatus(project){
+            return project.projectStatus === this.state.showStatus || this.state.showStatus==="allStatus";
+        };
+
+        renderLinkedProject(project){
+            return (
+                <LinkContainer
+                    key={project.projectName}
+                    to={`/project/${project.projectName}`}
+                >
+                    <ListGroupItem  header={"projectName: "+project.projectName}>
+                        {"LastEdit: "+ new Date(project.lastEditAt).toLocaleString()}
+                    </ListGroupItem>
+                </LinkContainer>
+            );
+        }
+
+
+        renderCreateProject(project){
+            return (
+                <Fragment key={"fragmentProject"}>
+                    <LinkContainer
+                        key="new"
+                        to="/project/new"
+                    >
+                        <ListGroupItem>
+                            <h4>
+                                <b>{"\uFF0B"}</b> Create a new project
+                            </h4>
+                        </ListGroupItem>
+                    </LinkContainer>
+                    {this.renderLinkedProject(project)}
+                </Fragment>
+            );
+        }
+
 
         renderProjects(projects)
         {
             // if user is admin then he can see all of the projects
             if (this.props.isAdmin){
                 return projects.map(
-                    (project,i) =>
-                        i!==0
-                            ? <LinkContainer
-                                key={project.projectName}
-                                to={`/project/${project.projectName}`}
-                                >
-                                    <ListGroupItem  header={"projectName: "+project.projectName}>
-                                        {"LastEdit: "+ new Date(project.lastEditAt).toLocaleString()}
-                                    </ListGroupItem>
-                                </LinkContainer>
-                            : <LinkContainer
-                                key="new"
-                                to="/project/new"
-                            >
-                                <ListGroupItem>
-                                    <h4>
-                                        <b>{"\uFF0B"}</b> Create a new project
-                                    </h4>
-                                </ListGroupItem>
-                            </LinkContainer>
+                    (project,i) =>{
+                        if (i === 0) {
+                            return this.renderCreateProject(project);
+                        }else if (this.showProjectBasedOnStatus(project)) {
+                            return this.renderLinkedProject(project);
+                        }
+                        return null;
+                    }
 
                 );
             } else{
                 return projects.map(
-                    (project,i) =>
-                        this.attendedProjects(project.projectName)?
-                        <LinkContainer
-                            key={project.projectName}
-                            to={`/project/${project.projectName}`}
-                        >
-                            <ListGroupItem  header={"projectName: "+project.projectName}>
-                                {"LastEdit: "+ new Date(project.lastEditAt).toLocaleString()}
-                            </ListGroupItem>
-                        </LinkContainer>
-                            : null
-
+                    (project,i) =>{
+                        if (this.attendedProjects(project.projectName) && this.showProjectBasedOnStatus(project))
+                            return this.renderLinkedProject(project);
+                        return null;
+                    }
                 );
             }
 
@@ -118,25 +136,21 @@ export default class Home extends Component {
             return users.map(
                 (user,i) =>
                     i!==0?
-                        <LinkContainer
-                            key={user.userName}
-                            to={`/user/${user.userName}`}
-                        >
-                            <ListGroupItem  header={"userName: "+user.userName}>
-                                {"CreateAt: "+ new Date(user.createAt).toLocaleString()}
-                            </ListGroupItem>
-                        </LinkContainer>
-                        :<LinkContainer
-                            key="new"
-                            to="/user/new"
-                        >
-                            <ListGroupItem>
-                                <h4>
-                                    <b>{"\uFF0B"}</b> Create a new user
-                                </h4>
-                            </ListGroupItem>
-                        </LinkContainer>
-
+                        this.renderUserInfo(user)
+                        :
+                        <Fragment key={"fragmentUser"}>
+                            <LinkContainer
+                                key="new"
+                                to="/user/new"
+                            >
+                                <ListGroupItem>
+                                    <h4>
+                                        <b>{"\uFF0B"}</b> Create a new user
+                                    </h4>
+                                </ListGroupItem>
+                            </LinkContainer>
+                            {this.renderUserInfo(user)}
+                        </Fragment>
             );
         }
 
@@ -177,6 +191,28 @@ export default class Home extends Component {
                     </div>
                     <div className="Projects">
                         <PageHeader>My Projects</PageHeader>
+                        <ButtonGroup>
+                            <Button
+                                onClick={this.changeShowStatus}
+                                value={"allStatus"}
+                                type={"submit"}
+                            >allStatus</Button>
+                            <Button
+                                onClick={this.changeShowStatus}
+                                value={"completed"}
+                                type={"submit"}
+                            >completed</Button>
+                            <Button
+                                onClick={this.changeShowStatus}
+                                value={"active"}
+                                type={"submit"}
+                            >active</Button>
+                            <Button
+                                onClick={this.changeShowStatus}
+                                value={"commencing"}
+                                type={"submit"}
+                            >commencing</Button>
+                        </ButtonGroup>;
                         <ListGroup>
                             {!this.state.isLoading && this.renderProjects(this.state.projects)}
                         </ListGroup>

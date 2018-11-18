@@ -35,7 +35,8 @@ export default class CreateNewUser extends Component {
             isAdmin: this.state.isAdmin,
             skill: this.state.skill,
             projects: this.state.projects,
-            details:this.state.details
+            details:this.state.details,
+            lastEditAt:Date.now()
         };
 
         try{

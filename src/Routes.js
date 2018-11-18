@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Switch } from "react-router-dom";
+import { Switch } from "react-router-dom";
 import AppliedRoute from "./components/AppliedRoute";
 import Home from "./containers/Home";
 import NotFound from "./containers/NotFound";
@@ -26,5 +26,5 @@ export default ({childProps}) =>
         <AppliedRoute path={"/project/:id"} exact component={Projects} props={childProps}/>
         <AppliedRoute path={"/user/:id"} exact component={Users} props={childProps}/>
 
-        <Route component={NotFound}/>
+        <AppliedRoute component={NotFound}/>
     </Switch>;

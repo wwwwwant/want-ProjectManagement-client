@@ -98,7 +98,7 @@ export default class Home extends Component {
                             </h4>
                         </ListGroupItem>
                     </LinkContainer>
-                    {this.renderLinkedProject(project)}
+                    {this.showProjectBasedOnStatus(project)? this.renderLinkedProject(project):null}
                 </Fragment>
             );
         }
@@ -173,8 +173,8 @@ export default class Home extends Component {
         {
             return (
                 <div className="lander">
-                    <h1>Scratch</h1>
-                    <p>A simple note taking app</p>
+                    <h1>ProjectManagement Application</h1>
+                    <p>designed for use inside a company</p>
                     <div>
                         <Link to="/login" className="btn btn-info btn-lg">
                             Login

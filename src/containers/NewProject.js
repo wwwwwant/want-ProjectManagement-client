@@ -50,6 +50,7 @@ export default class NewProject extends Component {
 
             res = await createProject(params);
             console.log("success to create project ",res);
+            this.props.history.push("/");
 
         }catch (e) {
             console.log(e.message);

@@ -53,7 +53,7 @@ export default class Users extends Component {
         this.setState({isLoading:true});
 
         try{
-            let res = this.updateProjectDevelopers();
+            let res = await this.updateProjectDevelopers();
             console.log(res);
             res = await this.editUser();
             console.log(res);
@@ -67,7 +67,8 @@ export default class Users extends Component {
     };
 
     async updateProjectDevelopers() {
-        const oldProjects = this.state.user.projects.split(",");
+        console.log(this.state.user.projects);
+        const oldProjects = this.state.user.projects!==""? this.state.user.projects.split(",") :[];
         const newProjects = this.state.projects.split(",");
         if (oldProjects !== newProjects) {
             const addProjects = newProjects.filter( project =>{
